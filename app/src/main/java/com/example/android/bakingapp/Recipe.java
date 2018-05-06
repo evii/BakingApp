@@ -9,6 +9,7 @@ import java.util.List;
  */
 
 public class Recipe {
+
     @SerializedName("id")
     private Integer mId;
 
