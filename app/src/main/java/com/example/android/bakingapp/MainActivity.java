@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Timber.d(String.valueOf(recipeList.size()));
         result.setText(names);
-    }
 
+    }
 }
 
