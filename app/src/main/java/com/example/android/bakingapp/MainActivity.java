@@ -1,10 +1,13 @@
 package com.example.android.bakingapp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,10 +26,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener{
+public class MainActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
 
     ProgressDialog progressDialog;
-   // @BindView(R.id.resultTV) TextView result;
+    // @BindView(R.id.resultTV) TextView result;
     RecipesAdapter adapter;
 
     @Override
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-   //     ButterKnife.bind(this);
+        //     ButterKnife.bind(this);
         Timber.plant(new Timber.DebugTree());
 
         //progress dialog for loading data
@@ -68,16 +71,24 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
         for (int i = 0; i < recipeList.size(); i++) {
             Recipe recipe = recipeList.get(i);
             name = recipe.getName();
-            names = names+ ", " + name;
+            names = names + ", " + name;
         }
-        Timber.d(String.valueOf(recipeList.size()));
-        Timber.d(names);
 
 
+        // measure the screen width to define if tablet or phone:
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = Math.round(displayMetrics.widthPixels / displayMetrics.density);
+        int numberOfColumns;
+        if (width < 600) {
+            numberOfColumns = 1;
+        } else {
+            numberOfColumns = 3;
+        }
 
         // set up the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recipes_rv);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         adapter = new RecipesAdapter(this, recipeList);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
@@ -86,8 +97,10 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
     @Override
     public void onItemClick(View view, int position) {
         Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, RecipeDetailActivity.class);
+        startActivity(intent);
     }
 
-    }
+}
 
 
