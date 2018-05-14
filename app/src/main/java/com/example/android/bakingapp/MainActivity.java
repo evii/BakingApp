@@ -5,22 +5,20 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.bakingapp.utils.RecipesAdapter;
+import com.example.android.bakingapp.objects_adapters.Ingredient;
+import com.example.android.bakingapp.objects_adapters.Recipe;
+import com.example.android.bakingapp.objects_adapters.RecipesAdapter;
+import com.example.android.bakingapp.objects_adapters.Step;
 import com.example.android.bakingapp.utils.RetrofitClient;
 import com.example.android.bakingapp.utils.RetrofitInterface;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
     ProgressDialog progressDialog;
     // @BindView(R.id.resultTV) TextView result;
     RecipesAdapter adapter;
+    List<Recipe> mRecipeList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
 
         //progress dialog for loading data
         progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.setMessage("");
         progressDialog.show();
 
         //reading recipe data from the url - Retrofit
@@ -66,10 +64,11 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
 
     //Method to generate List of data using RecyclerView with custom adapter
     private void generateRecipeGrid(List<Recipe> recipeList) {
+        mRecipeList = recipeList;
         String name;
         String names = "";
-        for (int i = 0; i < recipeList.size(); i++) {
-            Recipe recipe = recipeList.get(i);
+        for (int i = 0; i < mRecipeList.size(); i++) {
+            Recipe recipe = mRecipeList.get(i);
             name = recipe.getName();
             names = names + ", " + name;
         }
@@ -89,14 +88,22 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
         // set up the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recipes_rv);
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-        adapter = new RecipesAdapter(this, recipeList);
+        adapter = new RecipesAdapter(this, mRecipeList);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+
+        List<Ingredient> ingredients = mRecipeList.get(position).getIngredients();
+        List<Step> steps = mRecipeList.get(position).getSteps();
+
+        Toast.makeText(this, "Pocet ingredienci: " + ingredients.size() + "První ingredience: " + ingredients.get(0).getIngredient() +
+                        "Pocet kroků: " + steps.size() + "První krok: " + steps.get(0).getShortDescription(),
+
+                Toast.LENGTH_LONG).show();
+
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         startActivity(intent);
     }

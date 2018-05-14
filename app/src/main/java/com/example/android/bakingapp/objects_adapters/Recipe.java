@@ -1,4 +1,4 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.objects_adapters;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -11,18 +11,27 @@ import java.util.List;
 public class Recipe {
 
     @SerializedName("id")
-    private Integer mId;
+    private int mId;
 
     @SerializedName("name")
     private String mName;
 
     @SerializedName("servings")
-    private Integer mServings;
+    private int mServings;
 
-    public Recipe (int id, String name, int servings) {
+    @SerializedName("ingredients")
+    private List<Ingredient> mIngredients = null;
+
+    @SerializedName("steps")
+    private List<Step> mSteps = null;
+
+
+    public Recipe (int id, String name, int servings, List<Ingredient> ingredients, List<Step> steps) {
         mId = id;
         mName = name;
         mServings = servings;
+        mIngredients = ingredients;
+        mSteps = steps;
     }
 
     public int getId() {
@@ -35,6 +44,14 @@ public class Recipe {
 
     public int getServings(){
         return mServings;
+    }
+
+    public List<Ingredient> getIngredients(){
+        return mIngredients;
+    }
+
+    public List<Step> getSteps(){
+        return mSteps;
     }
 
     /**public static class RecipeResult {

@@ -1,6 +1,6 @@
 package com.example.android.bakingapp.utils;
 
-import com.example.android.bakingapp.Recipe;
+import com.example.android.bakingapp.objects_adapters.Recipe;
 
 import java.util.List;
 
