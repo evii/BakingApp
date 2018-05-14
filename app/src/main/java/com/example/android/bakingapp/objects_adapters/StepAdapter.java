@@ -21,12 +21,13 @@ import butterknife.ButterKnife;
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.ViewHolder> {
 
     private List<Step> mSteps;
+    private StepItemClickListener mClickListener;
 
     public StepAdapter(List<Step> data) {
         mSteps = data;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.step_description_tv)
         TextView stepDescriptionTv;
 
@@ -34,6 +35,13 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.ViewHolder> {
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+
         }
     }
 
@@ -49,18 +57,30 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.ViewHolder> {
     public void onBindViewHolder(StepAdapter.ViewHolder holder, final int position) {
         holder.stepDescriptionTv.setText(mSteps.get(position).getShortDescription());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        /*holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(v.getContext(), "Item " + position + " is clicked.", Toast.LENGTH_SHORT).show();
             }
-        });
+        }
+        );*/
     }
 
     @Override
     public int getItemCount() {
         return mSteps.size();
     }
+
+    // allows clicks events to be caught
+    public void setClickListener(StepItemClickListener itemClickListener) {
+        this.mClickListener = itemClickListener;
+    }
+
+    // parent activity will implement this method to respond to click events
+    public interface StepItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
 }
 
 

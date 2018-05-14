@@ -41,9 +41,5 @@ public class RecipeDetailActivity extends AppCompatActivity {
         fragmentManager.beginTransaction().add(R.id.recipe_detail_container,fragment).commit();
 
     }
-    // to be deleted - just for layout check purposes
-    public void openDetail (View view){
-        Intent i = new Intent(this, StepDetailActivity.class);
-        startActivity(i);
-    }
+
 }

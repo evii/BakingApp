@@ -105,10 +105,6 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
         ArrayList<Ingredient> ingredients = (ArrayList<Ingredient>) mRecipeList.get(position).getIngredients();
         ArrayList<Step> steps = (ArrayList<Step>) mRecipeList.get(position).getSteps();
 
-        Toast.makeText(this, "Pocet ingredienci: " + ingredients.size() + "První ingredience: " + ingredients.get(0).getIngredient() +
-                        "Pocet kroků: " + steps.size() + "První krok: " + steps.get(0).getShortDescription(),
-                Toast.LENGTH_LONG).show();
-
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putParcelableArrayListExtra(INGREDIENTS_LIST, ingredients);
 
