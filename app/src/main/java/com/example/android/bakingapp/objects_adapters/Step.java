@@ -1,12 +1,15 @@
 package com.example.android.bakingapp.objects_adapters;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by evi on 7. 5. 2018.
  */
 
-public class Step {
+public class Step implements Parcelable{
 
     @SerializedName("id")
     private int mIdStep;
@@ -43,4 +46,38 @@ public class Step {
         return mVideoURL;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // Parcelable implementation
+    public static final Creator<Step> CREATOR = new Creator<Step>() {
+        @Override
+        public Step createFromParcel(Parcel in) {
+            return new Step(in);
+        }
+
+        @Override
+        public Step[] newArray(int size) {
+            return new Step[size];
+        }
+    };
+
+    protected Step(Parcel in) {
+        mIdStep = in.readInt();
+        mShortDescription = in.readString();
+        mDescription = in.readString();
+        mVideoURL = in.readString();
+        mThumbnailURL = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(mIdStep);
+        parcel.writeString(mShortDescription);
+        parcel.writeString(mDescription);
+        parcel.writeString(mVideoURL);
+        parcel.writeString(mThumbnailURL);
+    }
 }

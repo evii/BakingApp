@@ -2,11 +2,13 @@ package com.example.android.bakingapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ import com.example.android.bakingapp.objects_adapters.Step;
 import com.example.android.bakingapp.utils.RetrofitClient;
 import com.example.android.bakingapp.utils.RetrofitInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -26,10 +29,13 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
     // @BindView(R.id.resultTV) TextView result;
-    RecipesAdapter adapter;
-    List<Recipe> mRecipeList;
+    private RecipesAdapter adapter;
+    private List<Recipe> mRecipeList;
+    public static final String INGREDIENTS_LIST = "INGREDIENTS_LIST";
+    public static final String STEPS_LIST = "STEPS_LIST";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,15 +102,17 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
     @Override
     public void onItemClick(View view, int position) {
 
-        List<Ingredient> ingredients = mRecipeList.get(position).getIngredients();
-        List<Step> steps = mRecipeList.get(position).getSteps();
+        ArrayList<Ingredient> ingredients = (ArrayList<Ingredient>) mRecipeList.get(position).getIngredients();
+        ArrayList<Step> steps = (ArrayList<Step>) mRecipeList.get(position).getSteps();
 
         Toast.makeText(this, "Pocet ingredienci: " + ingredients.size() + "První ingredience: " + ingredients.get(0).getIngredient() +
                         "Pocet kroků: " + steps.size() + "První krok: " + steps.get(0).getShortDescription(),
-
                 Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(this, RecipeDetailActivity.class);
+        intent.putParcelableArrayListExtra(INGREDIENTS_LIST, ingredients);
+
+        intent.putParcelableArrayListExtra(STEPS_LIST, steps);
         startActivity(intent);
     }
 
