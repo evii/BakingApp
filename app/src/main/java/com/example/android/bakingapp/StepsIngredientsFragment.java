@@ -74,7 +74,8 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
         //Toast.makeText(view.getContext(), "Item " + position + " is clicked.", Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
-        intent.putParcelableArrayListExtra(STEP_DETAIL_LIST, (ArrayList) mSteps);
+        Step stepClicked = mSteps.get(position);
+        intent.putExtra(STEP_DETAIL_LIST, stepClicked);
         startActivity(intent);
     }
 
