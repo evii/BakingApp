@@ -35,6 +35,10 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
     private RecyclerView mRecyclerView;
     private StepAdapter mStepAdapter;
     public final static String STEP_DETAIL_LIST = "STEP_DETAIL_LIST";
+    public final static String STEP_CLICKED = "STEP_CLICKED";
+    public final static String POSITION_KEY = "POSITION_KEY";
+
+
 
     public StepsIngredientsFragment() {
     }
@@ -48,6 +52,7 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
         if (getArguments() != null) {
             mIngredients = getArguments().getParcelableArrayList(MainActivity.INGREDIENTS_LIST);
             mSteps = getArguments().getParcelableArrayList(MainActivity.STEPS_LIST);
+
         }
         ButterKnife.bind(this, rootview);
 
@@ -70,12 +75,12 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
 
     // implements itemclick for Steps
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int stepPosition) {
         //Toast.makeText(view.getContext(), "Item " + position + " is clicked.", Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
-        Step stepClicked = mSteps.get(position);
-        intent.putExtra(STEP_DETAIL_LIST, stepClicked);
+        intent.putParcelableArrayListExtra(STEP_DETAIL_LIST, (ArrayList) mSteps);
+        intent.putExtra(POSITION_KEY, stepPosition);
         startActivity(intent);
     }
 

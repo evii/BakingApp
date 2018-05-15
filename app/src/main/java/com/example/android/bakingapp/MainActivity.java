@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
     public static final String STEPS_LIST = "STEPS_LIST";
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
 
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putParcelableArrayListExtra(INGREDIENTS_LIST, ingredients);
-
         intent.putParcelableArrayListExtra(STEPS_LIST, steps);
         startActivity(intent);
     }

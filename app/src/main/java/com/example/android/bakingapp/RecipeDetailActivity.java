@@ -29,11 +29,9 @@ public class RecipeDetailActivity extends AppCompatActivity {
         ArrayList<Ingredient> ingredients = getIntent().getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
         ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(MainActivity.STEPS_LIST);
 
-
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, ingredients);
         bundle.putParcelableArrayList(MainActivity.STEPS_LIST, steps);
-
 
         StepsIngredientsFragment fragment = new StepsIngredientsFragment();
         fragment.setArguments(bundle);

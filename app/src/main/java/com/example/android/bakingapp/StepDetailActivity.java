@@ -9,6 +9,8 @@ import com.example.android.bakingapp.objects_adapters.Step;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 public class StepDetailActivity extends AppCompatActivity {
 
     @Override
@@ -16,10 +18,13 @@ public class StepDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
 
-        Step step = getIntent().getExtras().getParcelable(StepsIngredientsFragment.STEP_DETAIL_LIST);
+
+        ArrayList<Step> stepsList = getIntent().getExtras().getParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST);
+        int stepPosition = getIntent().getExtras().getInt(StepsIngredientsFragment.POSITION_KEY);
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable(StepsIngredientsFragment.STEP_DETAIL_LIST, step);
+        bundle.putParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST,stepsList);
+        bundle.putInt(StepsIngredientsFragment.POSITION_KEY, stepPosition);
 
         StepDetailsFragment stepFragment = new StepDetailsFragment();
         stepFragment.setArguments(bundle);
