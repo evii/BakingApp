@@ -1,6 +1,8 @@
 package com.example.android.bakingapp;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.bakingapp.objects_adapters.Step;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
@@ -30,6 +46,7 @@ public class StepDetailsFragment extends Fragment {
     private int mStepPosition;
     private ArrayList<Step> mStepList;
     private String mDetailedDescription;
+    private SimpleExoPlayer mPlayer;
 
     @BindView(R.id.step_detail_tv)
     TextView stepDetailTv;
@@ -39,6 +56,10 @@ public class StepDetailsFragment extends Fragment {
 
     @BindView(R.id.button_next)
     ImageView stepNextButton;
+
+    @BindView(R.id.playerView)
+    SimpleExoPlayerView playerView;
+
 
     public StepDetailsFragment() {
     }
@@ -55,7 +76,6 @@ public class StepDetailsFragment extends Fragment {
             mStepPosition = getArguments().getInt(StepsIngredientsFragment.POSITION_KEY);
         }
 
-        Timber.v("pocetkroku" + mStepList.size());
         // Populate the View with the detailed step description
         mStep = mStepList.get(mStepPosition);
         mDetailedDescription = mStep.getDescription();
@@ -78,11 +98,15 @@ public class StepDetailsFragment extends Fragment {
 
             }
         });
+        Timber.v("krok?" + mDetailedDescription);
 
+        Uri videoUri = Uri.parse(mStep.getVideoURL());
+        setUpVideoPlayer(videoUri);
 
         return rootView;
     }
 
+    //helper method for Previous button
     private void getPreviousStep() {
         mStepPosition = mStepPosition - 1;
         if (mStepPosition < 0) {
@@ -93,9 +117,10 @@ public class StepDetailsFragment extends Fragment {
         }
     }
 
+    //helper method for Next button
     private void getNextStep() {
         mStepPosition = mStepPosition + 1;
-        if (mStepPosition > mStepList.size()-1) {
+        if (mStepPosition > mStepList.size() - 1) {
             Toast.makeText(getContext(), "There is no next step", Toast.LENGTH_SHORT).show();
         } else {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
@@ -103,5 +128,35 @@ public class StepDetailsFragment extends Fragment {
         }
     }
 
+
+    // helper method to initialiaze Exoplayer
+
+    private void setUpVideoPlayer(Uri uri) {
+        if (mPlayer == null) {
+            Handler mainHandler = new Handler();
+            BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+            TrackSelection.Factory videoTrackSelectionFactory =
+                    new AdaptiveTrackSelection.Factory(bandwidthMeter);
+            TrackSelector trackSelector =
+                    new DefaultTrackSelector(videoTrackSelectionFactory);
+
+            mPlayer =
+                    ExoPlayerFactory.newSimpleInstance(getActivity().getApplicationContext(), trackSelector);
+
+            playerView.setPlayer(mPlayer);
+
+
+// Produces DataSource instances through which media data is loaded.
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this.getActivity(),
+                    Util.getUserAgent(this.getActivity(), "BakingApp"));
+// This is the MediaSource representing the media to be played.
+            MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(uri);
+// Prepare the player with the source.
+            mPlayer.prepare(videoSource);
+            mPlayer.setPlayWhenReady(true);
+
+        }
+    }
 }
 

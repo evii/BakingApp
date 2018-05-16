@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import timber.log.Timber;
 
 public class StepDetailActivity extends AppCompatActivity {
+    StepDetailsFragment stepFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,12 +24,14 @@ public class StepDetailActivity extends AppCompatActivity {
         int stepPosition = getIntent().getExtras().getInt(StepsIngredientsFragment.POSITION_KEY);
 
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST,stepsList);
+        bundle.putParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST, stepsList);
         bundle.putInt(StepsIngredientsFragment.POSITION_KEY, stepPosition);
 
-        StepDetailsFragment stepFragment = new StepDetailsFragment();
-        stepFragment.setArguments(bundle);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.step_description_container,stepFragment).commit();
+        if (stepFragment == null) {
+            stepFragment = new StepDetailsFragment();
+            stepFragment.setArguments(bundle);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment).commit();
+        }
     }
 }

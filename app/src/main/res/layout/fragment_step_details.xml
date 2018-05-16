@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="VIDEO"
-        android:textSize="30sp"
-        android:layout_gravity="center"/>
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        >
+
+    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
 
     <TextView
         android:id="@+id/step_detail_tv"
@@ -17,7 +18,8 @@
         android:text="Steps details"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
         <ImageView
             android:id="@+id/button_previous"
             android:layout_width="wrap_content"
