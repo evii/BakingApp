@@ -33,10 +33,23 @@ public class RecipeDetailActivity extends AppCompatActivity {
         bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, ingredients);
         bundle.putParcelableArrayList(MainActivity.STEPS_LIST, steps);
 
-        StepsIngredientsFragment fragment = new StepsIngredientsFragment();
-        fragment.setArguments(bundle);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.recipe_detail_container,fragment).commit();
+        //test for whether the fragment was already created
+        boolean addNewFragment = true;
+        if (savedInstanceState != null) {
+            addNewFragment = false;
+        }
+
+        if (addNewFragment) {
+            StepsIngredientsFragment fragment = new StepsIngredientsFragment();
+            fragment.setArguments(bundle);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().add(R.id.recipe_detail_container,fragment).commit();
+
+        } else {
+            Timber.d("Use existing StepIngredientsFragment.");
+        }
+
+
 
     }
 

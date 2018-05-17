@@ -47,6 +47,8 @@ public class StepDetailsFragment extends Fragment {
     private ArrayList<Step> mStepList;
     private String mDetailedDescription;
     private SimpleExoPlayer mPlayer;
+    private long mPlaybackPosition;
+    private static final String POSITION_KEY = "POSITION_KEY";
 
     @BindView(R.id.step_detail_tv)
     TextView stepDetailTv;
@@ -70,7 +72,7 @@ public class StepDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
         ButterKnife.bind(this, rootView);
 
-        // getting Step details + position from StepsIngredientsFragment
+        // getting Step details + step position from StepsIngredientsFragment
         if (getArguments() != null) {
             mStepList = getArguments().getParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST);
             mStepPosition = getArguments().getInt(StepsIngredientsFragment.POSITION_KEY);
@@ -100,10 +102,42 @@ public class StepDetailsFragment extends Fragment {
         });
         Timber.v("krok?" + mDetailedDescription);
 
+        if (savedInstanceState != null) {
+            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
+        }
+
         Uri videoUri = Uri.parse(mStep.getVideoURL());
         setUpVideoPlayer(videoUri);
 
         return rootView;
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mPlaybackPosition = mPlayer.getCurrentPosition();
+        if(outState!=null) {
+            outState.putLong(POSITION_KEY, mPlaybackPosition);
+
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if(savedInstanceState!=null) {
+            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
+            mPlayer.seekTo(mPlaybackPosition);
+        }
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        releasePlayer();
     }
 
     //helper method for Previous button
@@ -128,7 +162,6 @@ public class StepDetailsFragment extends Fragment {
         }
     }
 
-
     // helper method to initialiaze Exoplayer
 
     private void setUpVideoPlayer(Uri uri) {
@@ -146,17 +179,24 @@ public class StepDetailsFragment extends Fragment {
             playerView.setPlayer(mPlayer);
 
 
-// Produces DataSource instances through which media data is loaded.
+           // Produces DataSource instances through which media data is loaded.
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this.getActivity(),
                     Util.getUserAgent(this.getActivity(), "BakingApp"));
-// This is the MediaSource representing the media to be played.
+            // This is the MediaSource representing the media to be played.
             MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(uri);
-// Prepare the player with the source.
+            // Prepare the player with the source.
             mPlayer.prepare(videoSource);
             mPlayer.setPlayWhenReady(true);
 
         }
+    }
+
+    // helper method for releasing player
+    private void releasePlayer() {
+        mPlayer.stop();
+        mPlayer.release();
+        mPlayer = null;
     }
 }
 
