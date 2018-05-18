@@ -48,7 +48,10 @@ public class StepDetailsFragment extends Fragment {
     private String mDetailedDescription;
     private SimpleExoPlayer mPlayer;
     private long mPlaybackPosition;
+    private Uri mVideoUri;
     private static final String POSITION_KEY = "POSITION_KEY";
+    private static final String URI_KEY = "URI_KEY";
+    private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
 
     @BindView(R.id.step_detail_tv)
     TextView stepDetailTv;
@@ -78,10 +81,17 @@ public class StepDetailsFragment extends Fragment {
             mStepPosition = getArguments().getInt(StepsIngredientsFragment.POSITION_KEY);
         }
 
+
         // Populate the View with the detailed step description
         mStep = mStepList.get(mStepPosition);
         mDetailedDescription = mStep.getDescription();
         stepDetailTv.setText(mDetailedDescription);
+
+        if (savedInstanceState != null) {
+            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
+            mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+            mDetailedDescription = savedInstanceState.getString(DESCRIPTION_KEY);
+        }
 
         // set functionality for Previous button - to get previous Step
         stepPreviousButton.setOnClickListener(new View.OnClickListener() {
@@ -100,14 +110,9 @@ public class StepDetailsFragment extends Fragment {
 
             }
         });
-        Timber.v("krok?" + mDetailedDescription);
 
-        if (savedInstanceState != null) {
-            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
-        }
-
-        Uri videoUri = Uri.parse(mStep.getVideoURL());
-        setUpVideoPlayer(videoUri);
+        mVideoUri = Uri.parse(mStep.getVideoURL());
+        setUpVideoPlayer(mVideoUri);
 
         return rootView;
     }
@@ -117,19 +122,26 @@ public class StepDetailsFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mPlaybackPosition = mPlayer.getCurrentPosition();
-        if(outState!=null) {
-            outState.putLong(POSITION_KEY, mPlaybackPosition);
 
+        if (outState != null) {
+            outState.putLong(POSITION_KEY, mPlaybackPosition);
+            outState.putString(URI_KEY, mVideoUri.toString());
+            outState.putString(DESCRIPTION_KEY, mDetailedDescription);
         }
     }
+
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if(savedInstanceState!=null) {
+        if (savedInstanceState != null) {
+            mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+            goToVideo(mVideoUri);
             mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
             mPlayer.seekTo(mPlaybackPosition);
+            mDetailedDescription = savedInstanceState.getString(DESCRIPTION_KEY);
+            stepDetailTv.setText(mDetailedDescription);
         }
     }
 
@@ -148,6 +160,8 @@ public class StepDetailsFragment extends Fragment {
         } else {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
             stepDetailTv.setText(mDetailedDescription);
+            mVideoUri = Uri.parse(mStepList.get(mStepPosition).getVideoURL());
+            goToVideo(mVideoUri);
         }
     }
 
@@ -159,11 +173,12 @@ public class StepDetailsFragment extends Fragment {
         } else {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
             stepDetailTv.setText(mDetailedDescription);
+            mVideoUri = Uri.parse(mStepList.get(mStepPosition).getVideoURL());
+            goToVideo(mVideoUri);
         }
     }
 
     // helper method to initialiaze Exoplayer
-
     private void setUpVideoPlayer(Uri uri) {
         if (mPlayer == null) {
             Handler mainHandler = new Handler();
@@ -179,7 +194,7 @@ public class StepDetailsFragment extends Fragment {
             playerView.setPlayer(mPlayer);
 
 
-           // Produces DataSource instances through which media data is loaded.
+            // Produces DataSource instances through which media data is loaded.
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this.getActivity(),
                     Util.getUserAgent(this.getActivity(), "BakingApp"));
             // This is the MediaSource representing the media to be played.
@@ -190,6 +205,18 @@ public class StepDetailsFragment extends Fragment {
             mPlayer.setPlayWhenReady(true);
 
         }
+    }
+
+    // helper method to go to next/previous video
+    private void goToVideo(Uri uri) {
+        mPlayer.stop();
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this.getActivity(),
+                Util.getUserAgent(this.getActivity(), "BakingApp"));
+        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(uri);
+        mPlayer.prepare(videoSource);
+        mPlayer.setPlayWhenReady(true);
+
     }
 
     // helper method for releasing player
