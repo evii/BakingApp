@@ -1,6 +1,8 @@
 package com.example.android.bakingapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +19,7 @@ import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.RecipesAdapter;
 import com.example.android.bakingapp.objects_adapters.Step;
 import com.example.android.bakingapp.objects_adapters.StepAdapter;
+import com.example.android.bakingapp.utils.UpdateIngredientsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,8 +88,8 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
     }
 
     // helper method for displaying Ingredients
-    private String putIngredientsInString(List<Ingredient> ingredients) {
-        String ingredientsFinalString = getResources().getString(R.string.ingredients) + "\n";
+    public static String putIngredientsInString(List<Ingredient> ingredients) {
+        String ingredientsFinalString = "Ingredients:" + "\n";
         for (int i = 0; i < ingredients.size(); i++) {
             double quantity = ingredients.get(i).getQuantity();
             String measure = ingredients.get(i).getMeasure();
@@ -97,8 +100,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
 
         return ingredientsFinalString;
     }
-
-
 
 
 }

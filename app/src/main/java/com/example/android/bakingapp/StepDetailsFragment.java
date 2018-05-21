@@ -49,9 +49,12 @@ public class StepDetailsFragment extends Fragment {
     private SimpleExoPlayer mPlayer;
     private long mPlaybackPosition;
     private Uri mVideoUri;
+    private boolean mPlayVideoWhenReady;
     private static final String POSITION_KEY = "POSITION_KEY";
     private static final String URI_KEY = "URI_KEY";
     private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
+    private static final String PLAY_WHE_READY_KEY = "PLAY_WHE_READY_KEY";
+
 
     @BindView(R.id.step_detail_tv)
     TextView stepDetailTv;
@@ -90,8 +93,11 @@ public class StepDetailsFragment extends Fragment {
         if (savedInstanceState != null) {
             mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
             mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
-            mDetailedDescription = savedInstanceState.getString(DESCRIPTION_KEY);
-        }
+            mStepPosition = savedInstanceState.getInt(DESCRIPTION_KEY);
+            mDetailedDescription = mStepList.get(mStepPosition).getDescription();
+            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
+
+                    }
 
         // set functionality for Previous button - to get previous Step
         stepPreviousButton.setOnClickListener(new View.OnClickListener() {
@@ -122,11 +128,14 @@ public class StepDetailsFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mPlaybackPosition = mPlayer.getCurrentPosition();
+        mPlayVideoWhenReady = mPlayer.getPlayWhenReady();
 
         if (outState != null) {
-            outState.putLong(POSITION_KEY, mPlaybackPosition);
             outState.putString(URI_KEY, mVideoUri.toString());
-            outState.putString(DESCRIPTION_KEY, mDetailedDescription);
+            outState.putLong(POSITION_KEY, mPlaybackPosition);
+            outState.putBoolean(PLAY_WHE_READY_KEY, mPlayVideoWhenReady);
+            outState.putInt(DESCRIPTION_KEY, mStepPosition);
+
         }
     }
 
@@ -136,12 +145,17 @@ public class StepDetailsFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
 
         if (savedInstanceState != null) {
+
             mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
             goToVideo(mVideoUri);
             mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
             mPlayer.seekTo(mPlaybackPosition);
-            mDetailedDescription = savedInstanceState.getString(DESCRIPTION_KEY);
-            stepDetailTv.setText(mDetailedDescription);
+            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
+            mPlayer.setPlayWhenReady(mPlayVideoWhenReady);
+
+            // save description state
+            mStepPosition = savedInstanceState.getInt(DESCRIPTION_KEY);
+            stepDetailTv.setText(mStepList.get(mStepPosition).getDescription());
         }
     }
 
@@ -157,6 +171,7 @@ public class StepDetailsFragment extends Fragment {
         mStepPosition = mStepPosition - 1;
         if (mStepPosition < 0) {
             Toast.makeText(getContext(), "There is no previous step", Toast.LENGTH_SHORT).show();
+            mStepPosition = 0;
         } else {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
             stepDetailTv.setText(mDetailedDescription);
@@ -170,6 +185,7 @@ public class StepDetailsFragment extends Fragment {
         mStepPosition = mStepPosition + 1;
         if (mStepPosition > mStepList.size() - 1) {
             Toast.makeText(getContext(), "There is no next step", Toast.LENGTH_SHORT).show();
+            mStepPosition = mStepList.size() - 1;
         } else {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
             stepDetailTv.setText(mDetailedDescription);

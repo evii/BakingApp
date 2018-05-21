@@ -1,6 +1,7 @@
 package com.example.android.bakingapp;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,7 @@ import android.view.View;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.Step;
+import com.example.android.bakingapp.utils.UpdateIngredientsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +21,14 @@ import timber.log.Timber;
 
 public class RecipeDetailActivity extends AppCompatActivity {
 
-
+    static ArrayList<Ingredient> ingredients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        ArrayList<Ingredient> ingredients = getIntent().getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
+        ingredients = getIntent().getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
         ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(MainActivity.STEPS_LIST);
 
         Bundle bundle = new Bundle();
@@ -48,9 +50,16 @@ public class RecipeDetailActivity extends AppCompatActivity {
         } else {
             Timber.d("Use existing StepIngredientsFragment.");
         }
+        startActionUpdateIngredients(this);
 
 
+    }
 
+    public static void startActionUpdateIngredients(Context context) {
+        Intent intent = new Intent(context, UpdateIngredientsService.class);
+        intent.putParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST, ingredients);
+        intent.setAction(UpdateIngredientsService.ACTION_UPDATE_INGREDIENTS);
+        context.startService(intent);
     }
 
 }
