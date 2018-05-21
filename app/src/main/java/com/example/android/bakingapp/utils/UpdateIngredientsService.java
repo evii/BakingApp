@@ -26,16 +26,12 @@ public class UpdateIngredientsService extends IntentService {
         super("UpdateIngredientsService");
     }
 
-    @Override
-    public void onStart(@Nullable Intent intent, int startId) {
-        super.onStart(intent, startId);
 
-        mIngredients = intent.getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
-    }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
+            mIngredients = intent.getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
             final String action = intent.getAction();
             if (ACTION_UPDATE_INGREDIENTS.equals(action)) {
                 handleActionUpdateIngredients();
