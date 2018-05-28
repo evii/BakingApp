@@ -3,18 +3,17 @@ package com.example.android.bakingapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.Step;
-import com.example.android.bakingapp.utils.UpdateIngredientsService;
+import com.example.android.bakingapp.widget_utils.UpdateIngredientsService;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import timber.log.Timber;
 
@@ -52,6 +51,16 @@ public class RecipeDetailActivity extends AppCompatActivity {
         }
         startActionUpdateIngredients(this);
 
+
+        //saving Ingredients into SharedPref
+        Gson gson = new Gson();
+        String json = gson.toJson(ingredients); // myObject - instance of MyObject
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("SharedPrefForWidget", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+
+        editor.putString("IngredientsForWidget", json);
+        editor.commit();
 
     }
 

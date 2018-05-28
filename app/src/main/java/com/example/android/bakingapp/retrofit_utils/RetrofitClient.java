@@ -1,4 +1,4 @@
-package com.example.android.bakingapp.utils;
+package com.example.android.bakingapp.retrofit_utils;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

@@ -1,8 +1,6 @@
 package com.example.android.bakingapp;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,20 +10,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ListView;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
-import com.example.android.bakingapp.objects_adapters.RecipesAdapter;
+import com.example.android.bakingapp.objects_adapters.IngredientAdapter;
 import com.example.android.bakingapp.objects_adapters.Step;
 import com.example.android.bakingapp.objects_adapters.StepAdapter;
-import com.example.android.bakingapp.utils.UpdateIngredientsService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * Created by evi on 6. 5. 2018.
@@ -34,7 +31,9 @@ import butterknife.ButterKnife;
 public class StepsIngredientsFragment extends Fragment implements StepAdapter.StepItemClickListener {
     private List<Step> mSteps;
     private List<Ingredient> mIngredients;
-    @BindView(R.id.ingredients_tv) TextView ingredientsTv;
+   // @BindView(R.id.ingredients_tv) TextView ingredientsTv;
+    @BindView(R.id.ingredients_lv) ListView ingredientsLv;
+
     private RecyclerView mRecyclerView;
     private StepAdapter mStepAdapter;
     public final static String STEP_DETAIL_LIST = "STEP_DETAIL_LIST";
@@ -60,8 +59,12 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
         ButterKnife.bind(this, rootview);
 
         // Displaying Ingredients
-        String finalIngredients = putIngredientsInString(mIngredients);
-        ingredientsTv.setText(finalIngredients);
+        //Ingredient[] ingredientsArray = mIngredients.toArray(new Ingredient[mIngredients.size()]);
+
+        IngredientAdapter adapter = new IngredientAdapter(mIngredients,this.getContext());
+        ingredientsLv.setAdapter(adapter);
+        /**String finalIngredients = putIngredientsInString(mIngredients);
+        ingredientsTv.setText(finalIngredients);*/
 
         // Displaying Steps
         mRecyclerView = rootview.findViewById(R.id.steps_rv);
@@ -90,16 +93,23 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
     // helper method for displaying Ingredients
     public static String putIngredientsInString(List<Ingredient> ingredients) {
         String ingredientsFinalString = "Ingredients:" + "\n";
-        for (int i = 0; i < ingredients.size(); i++) {
-            double quantity = ingredients.get(i).getQuantity();
-            String measure = ingredients.get(i).getMeasure();
-            String ingredient = ingredients.get(i).getIngredient();
-
-            ingredientsFinalString = ingredientsFinalString + quantity + " " + measure + " " + ingredient + "\n";
+        if(ingredients ==null || ingredients.size() == 0){
+            Timber.v("No recipe selected, no ingredients can be shown");
+            return "No recipe selected";
         }
+        else{
+            for (int i = 0; i < ingredients.size(); i++) {
+                double quantity = ingredients.get(i).getQuantity();
+                String measure = ingredients.get(i).getMeasure();
+                String ingredient = ingredients.get(i).getIngredient();
 
-        return ingredientsFinalString;
+                ingredientsFinalString = ingredientsFinalString + quantity + " " + measure + " " + ingredient + "\n";
+            }
+            return ingredientsFinalString;
+        }
     }
+
+
 
 
 }

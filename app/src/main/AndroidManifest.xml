@@ -22,7 +22,7 @@
         <activity android:name=".RecipeDetailActivity" />
         <activity android:name=".StepDetailActivity" />
 
-        <receiver android:name=".utils.BakingAppWidgetProvider">
+        <receiver android:name=".widget_utils.BakingAppWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -31,7 +31,9 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/baking_app_widget_provider_info" />
         </receiver>
-        <service android:name=".utils.UpdateIngredientsService" />
+        <service android:name=".widget_utils.UpdateIngredientsService" />
+        <service android:name=".widget_utils.ListWidgetService"
+        android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

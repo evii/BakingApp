@@ -68,4 +68,5 @@ public class Ingredient implements Parcelable{
         parcel.writeString(mMeasure);
         parcel.writeString(mIngredient);
     }
+
 }

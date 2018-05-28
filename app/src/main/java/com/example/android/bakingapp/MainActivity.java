@@ -2,13 +2,11 @@ package com.example.android.bakingapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,8 +14,8 @@ import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.Recipe;
 import com.example.android.bakingapp.objects_adapters.RecipesAdapter;
 import com.example.android.bakingapp.objects_adapters.Step;
-import com.example.android.bakingapp.utils.RetrofitClient;
-import com.example.android.bakingapp.utils.RetrofitInterface;
+import com.example.android.bakingapp.retrofit_utils.RetrofitClient;
+import com.example.android.bakingapp.retrofit_utils.RetrofitInterface;
 
 import java.util.ArrayList;
 import java.util.List;

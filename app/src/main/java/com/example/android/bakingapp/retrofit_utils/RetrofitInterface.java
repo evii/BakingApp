@@ -1,4 +1,4 @@
-package com.example.android.bakingapp.utils;
+package com.example.android.bakingapp.retrofit_utils;
 
 import com.example.android.bakingapp.objects_adapters.Recipe;
 

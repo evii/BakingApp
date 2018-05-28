@@ -1,15 +1,18 @@
-package com.example.android.bakingapp.utils;
+package com.example.android.bakingapp.widget_utils;
 
 import android.app.IntentService;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.Nullable;
 
 import com.example.android.bakingapp.MainActivity;
+import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.StepsIngredientsFragment;
 import com.example.android.bakingapp.objects_adapters.Ingredient;
+import com.example.android.bakingapp.widget_utils.BakingAppWidgetProvider;
 
 import java.util.List;
 
@@ -47,10 +50,12 @@ public class UpdateIngredientsService extends IntentService {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingAppWidgetProvider.class));
         //Now update all widgets
-        BakingAppWidgetProvider.updateAppWidgets(this, appWidgetManager, widgetText, appWidgetIds);
+     //   BakingAppWidgetProvider.updateAppWidgets(this, appWidgetManager, widgetText, appWidgetIds);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
 
 
     }
+
 
 
 
