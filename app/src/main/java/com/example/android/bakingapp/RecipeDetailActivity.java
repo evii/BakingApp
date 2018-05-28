@@ -49,7 +49,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         } else {
             Timber.d("Use existing StepIngredientsFragment.");
         }
-        startActionUpdateIngredients(this);
+        //startActionUpdateIngredients(this);
 
 
         //saving Ingredients into SharedPref
@@ -64,11 +64,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
     }
 
-    public static void startActionUpdateIngredients(Context context) {
+    /*public static void startActionUpdateIngredients(Context context) {
         Intent intent = new Intent(context, UpdateIngredientsService.class);
         intent.putParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST, ingredients);
         intent.setAction(UpdateIngredientsService.ACTION_UPDATE_INGREDIENTS);
         context.startService(intent);
-    }
+    }*/
 
 }

@@ -23,7 +23,7 @@ import java.util.List;
 public class UpdateIngredientsService extends IntentService {
 
     public static final String ACTION_UPDATE_INGREDIENTS = "com.example.android.bakingapp.utils.action.update_ingredients";
-    private List<Ingredient> mIngredients;
+
 
     public UpdateIngredientsService() {
         super("UpdateIngredientsService");
@@ -34,7 +34,7 @@ public class UpdateIngredientsService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
-            mIngredients = intent.getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
+         //   mIngredients = intent.getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
             final String action = intent.getAction();
             if (ACTION_UPDATE_INGREDIENTS.equals(action)) {
                 handleActionUpdateIngredients();
@@ -46,7 +46,7 @@ public class UpdateIngredientsService extends IntentService {
     private void handleActionUpdateIngredients() {
 
 
-        String widgetText = StepsIngredientsFragment.putIngredientsInString(mIngredients);
+
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingAppWidgetProvider.class));
         //Now update all widgets
