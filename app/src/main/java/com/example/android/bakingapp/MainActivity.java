@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
     private List<Recipe> mRecipeList;
     public static final String INGREDIENTS_LIST = "INGREDIENTS_LIST";
     public static final String STEPS_LIST = "STEPS_LIST";
+    public static final String RECIPE_NAME = "RECIPE_NAME";
 
 
 
@@ -103,10 +104,12 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
 
         ArrayList<Ingredient> ingredients = (ArrayList<Ingredient>) mRecipeList.get(position).getIngredients();
         ArrayList<Step> steps = (ArrayList<Step>) mRecipeList.get(position).getSteps();
+        String recipeName = mRecipeList.get(position).getName();
 
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putParcelableArrayListExtra(INGREDIENTS_LIST, ingredients);
         intent.putParcelableArrayListExtra(STEPS_LIST, steps);
+        intent.putExtra(RECIPE_NAME,recipeName);
         startActivity(intent);
     }
 

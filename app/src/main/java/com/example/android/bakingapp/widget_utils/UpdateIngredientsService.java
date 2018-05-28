@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.widget.TextView;
 
 import com.example.android.bakingapp.MainActivity;
 import com.example.android.bakingapp.R;
@@ -29,34 +30,22 @@ public class UpdateIngredientsService extends IntentService {
         super("UpdateIngredientsService");
     }
 
-
-
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
-         //   mIngredients = intent.getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
             final String action = intent.getAction();
             if (ACTION_UPDATE_INGREDIENTS.equals(action)) {
                 handleActionUpdateIngredients();
             }
         }
-
     }
 
     private void handleActionUpdateIngredients() {
 
-
-
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingAppWidgetProvider.class));
-        //Now update all widgets
-     //   BakingAppWidgetProvider.updateAppWidgets(this, appWidgetManager, widgetText, appWidgetIds);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
 
-
     }
-
-
-
 
 }

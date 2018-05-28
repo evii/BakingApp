@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -27,7 +28,6 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
 
-        //views.setTextViewText(R.id.appwidget_text, widgetText);
 
         // Set up the collection
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -41,7 +41,7 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         // set up intent for opening app after clicking on the widget
         Intent intent = new Intent(context,MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context,0, intent,0 );
-        views.setOnClickPendingIntent(R.id.appwidget_text,pendingIntent);
+        views.setOnClickPendingIntent(R.id.widget,pendingIntent);
 
     }
 
@@ -51,7 +51,7 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
-     //   RecipeDetailActivity.startActionUpdateIngredients(context);
+      RecipeDetailActivity.startActionUpdateIngredients(context);
 
             for (int appWidgetId : appWidgetIds) {
                 updateAppWidget(context, appWidgetManager, appWidgetId);
@@ -83,16 +83,5 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         views.setRemoteAdapter(0, R.id.widget_listview,
                 new Intent(context, ListWidgetService.class));
     }
-
-    /*public static void updateAppWidgets(Context context, AppWidgetManager appWidgetManager,
-                                        String widgetText, int[] appWidgetIds) {
-        // There may be multiple widgets active, so update all of them
-        for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, widgetText, appWidgetId);
-        }
-    }*/
-
-
-
 }
 

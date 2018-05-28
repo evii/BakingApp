@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.Step;
@@ -15,12 +16,16 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import timber.log.Timber;
 
 
 public class RecipeDetailActivity extends AppCompatActivity {
 
     static ArrayList<Ingredient> ingredients;
+    public static String recipeName;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +34,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         ingredients = getIntent().getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
         ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(MainActivity.STEPS_LIST);
+        recipeName = getIntent().getStringExtra(MainActivity.RECIPE_NAME);
+
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, ingredients);
@@ -49,26 +56,29 @@ public class RecipeDetailActivity extends AppCompatActivity {
         } else {
             Timber.d("Use existing StepIngredientsFragment.");
         }
-        //startActionUpdateIngredients(this);
+
 
 
         //saving Ingredients into SharedPref
         Gson gson = new Gson();
-        String json = gson.toJson(ingredients); // myObject - instance of MyObject
+        String json = gson.toJson(ingredients);
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("SharedPrefForWidget", 0); // 0 - for private mode
         SharedPreferences.Editor editor = pref.edit();
 
         editor.putString("IngredientsForWidget", json);
+        editor.putString("RecipeName", recipeName);
         editor.commit();
+
+        startActionUpdateIngredients(this);
 
     }
 
-    /*public static void startActionUpdateIngredients(Context context) {
+    public static void startActionUpdateIngredients(Context context) {
         Intent intent = new Intent(context, UpdateIngredientsService.class);
-        intent.putParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST, ingredients);
         intent.setAction(UpdateIngredientsService.ACTION_UPDATE_INGREDIENTS);
         context.startService(intent);
-    }*/
+
+    }
 
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+import android.widget.TextView;
 
 import com.example.android.bakingapp.MainActivity;
 import com.example.android.bakingapp.R;
@@ -16,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import timber.log.Timber;
 
 /**
@@ -30,32 +32,36 @@ public class ListWidgetService extends RemoteViewsService {
     }
 }
 
- class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    Context mContext=null;
+class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+    Context mContext = null;
     List<Ingredient> mIngredientsList = new ArrayList<>();
+
+
+
 
     public ListRemoteViewsFactory(Context appContext, Intent intent) {
         mContext = appContext;
     }
 
 
-
-
     @Override
-    public void onCreate() {    }
+    public void onCreate() {
+
+
+    }
 
     @Override
     public void onDataSetChanged() {
         //getting list of ingredients from shared preferences
-        SharedPreferences pref = mContext.getSharedPreferences("SharedPrefForWidget",0);
+        SharedPreferences pref = mContext.getSharedPreferences("SharedPrefForWidget", 0);
         String ingredientsString = pref.getString("IngredientsForWidget", "");
-
-        Timber.d(ingredientsString);
+       Timber.d(ingredientsString);
 
         Gson gson = new Gson();
         //List<Ingredient> ingredientsFromShared = new ArrayList<>();
-        Type type = new TypeToken<List<Ingredient>>() {}.getType();
-        mIngredientsList  = gson.fromJson(ingredientsString, type);
+        Type type = new TypeToken<List<Ingredient>>() {
+        }.getType();
+        mIngredientsList = gson.fromJson(ingredientsString, type);
 
     }
 
@@ -78,7 +84,7 @@ public class ListWidgetService extends RemoteViewsService {
         view.setTextViewText(R.id.quantity_tv, String.valueOf(mIngredientsList.get(position).getQuantity()));
         view.setTextViewText(R.id.measure_tv, mIngredientsList.get(position).getMeasure());
         view.setTextViewText(R.id.ingredient_tv, mIngredientsList.get(position).getIngredient());
-        Timber.d("setText" + mIngredientsList.get(position).getMeasure());
+
         return view;
 
 

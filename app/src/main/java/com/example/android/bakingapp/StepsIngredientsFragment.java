@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.IngredientAdapter;
@@ -31,8 +32,8 @@ import timber.log.Timber;
 public class StepsIngredientsFragment extends Fragment implements StepAdapter.StepItemClickListener {
     private List<Step> mSteps;
     private List<Ingredient> mIngredients;
-   // @BindView(R.id.ingredients_tv) TextView ingredientsTv;
-    @BindView(R.id.ingredients_lv) ListView ingredientsLv;
+   @BindView(R.id.ingredients_tv) TextView ingredientsTv;
+
 
     private RecyclerView mRecyclerView;
     private StepAdapter mStepAdapter;
@@ -61,10 +62,9 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
         // Displaying Ingredients
         //Ingredient[] ingredientsArray = mIngredients.toArray(new Ingredient[mIngredients.size()]);
 
-        IngredientAdapter adapter = new IngredientAdapter(mIngredients,this.getContext());
-        ingredientsLv.setAdapter(adapter);
-        /**String finalIngredients = putIngredientsInString(mIngredients);
-        ingredientsTv.setText(finalIngredients);*/
+
+        String finalIngredients = putIngredientsInString(mIngredients);
+        ingredientsTv.setText(finalIngredients);
 
         // Displaying Steps
         mRecyclerView = rootview.findViewById(R.id.steps_rv);
