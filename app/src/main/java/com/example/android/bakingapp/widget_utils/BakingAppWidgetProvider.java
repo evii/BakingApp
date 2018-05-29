@@ -28,6 +28,10 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
 
+// set up intent for opening app after clicking on the widget
+        Intent intent = new Intent(context,MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.widget,pendingIntent);
 
         // Set up the collection
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -37,13 +41,7 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         }
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
-
-        // set up intent for opening app after clicking on the widget
-        Intent intent = new Intent(context,MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context,0, intent,0 );
-        views.setOnClickPendingIntent(R.id.widget,pendingIntent);
-
-    }
+            }
 
 
 
