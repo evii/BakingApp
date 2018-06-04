@@ -85,6 +85,13 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         view.setTextViewText(R.id.measure_tv, mIngredientsList.get(position).getMeasure());
         view.setTextViewText(R.id.ingredient_tv, mIngredientsList.get(position).getIngredient());
 
+        Intent fillInIntent1 = new Intent();
+        Intent fillInIntent2 = new Intent();
+        Intent fillInIntent3 = new Intent();
+
+        view. setOnClickFillInIntent(R.id.ingredient_tv, fillInIntent1);
+        view. setOnClickFillInIntent(R.id.measure_tv, fillInIntent2);
+        view. setOnClickFillInIntent(R.id.quantity_tv, fillInIntent3);
         return view;
 
 
