@@ -82,11 +82,15 @@ public class StepDetailsFragment extends Fragment {
         if (getArguments() != null) {
             mStepList = getArguments().getParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST);
             mStepPosition = getArguments().getInt(StepsIngredientsFragment.POSITION_KEY);
+            Timber.d("stepDetailTwoPaneGetArg" + mStepPosition);
+            Timber.d("stepDetailTwoPaneGetArg" + mStepList);
         }
 
 
         // Populate the View with the detailed step description
         mStep = mStepList.get(mStepPosition);
+        Timber.d("stepDetailTwoPane" + mStepPosition);
+        Timber.d("stepDetailTwoPane" + mStepList);
         mDetailedDescription = mStep.getDescription();
         stepDetailTv.setText(mDetailedDescription);
 
@@ -97,7 +101,7 @@ public class StepDetailsFragment extends Fragment {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
             mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
 
-                    }
+        }
 
         // set functionality for Previous button - to get previous Step
         stepPreviousButton.setOnClickListener(new View.OnClickListener() {

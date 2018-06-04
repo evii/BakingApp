@@ -24,7 +24,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
     static ArrayList<Ingredient> ingredients;
     public static String recipeName;
-
+    private boolean isTwoPane;
 
 
     @Override
@@ -36,28 +36,93 @@ public class RecipeDetailActivity extends AppCompatActivity {
         ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(MainActivity.STEPS_LIST);
         recipeName = getIntent().getStringExtra(MainActivity.RECIPE_NAME);
 
-
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, ingredients);
         bundle.putParcelableArrayList(MainActivity.STEPS_LIST, steps);
 
-        //test for whether the fragment was already created
-        boolean addNewFragment = true;
-        if (savedInstanceState != null) {
-            addNewFragment = false;
-        }
 
-        if (addNewFragment) {
-            StepsIngredientsFragment fragment = new StepsIngredientsFragment();
-            fragment.setArguments(bundle);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().add(R.id.recipe_detail_container,fragment).commit();
+        // test if its twopane + inflate twopane mode
+        if (findViewById(R.id.video_step_ll) != null) {
+            isTwoPane = true;
+            Timber.d("twopane " + isTwoPane);
+
+           boolean addNewRecipeDetailFragment = true;
+            if (savedInstanceState != null) {
+                addNewRecipeDetailFragment = false;
+            }
+
+            if (addNewRecipeDetailFragment) {
+                StepsIngredientsFragment fragment = new StepsIngredientsFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragment.setArguments(bundle);
+                fragmentManager.beginTransaction().add(R.id.recipe_detail_container, fragment).commit();
+
+            } else {
+                Timber.d("Use existing StepIngredientsFragment.");
+            }
+
+            //test for whether the fragment was already created
+            boolean addNewStepsFragment = true;
+            if (savedInstanceState != null) {
+                addNewStepsFragment = false;
+            }
+
+            Bundle stepBundle = new Bundle();
+            stepBundle.putParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST, steps);
+            Timber.d("twopane" + steps.size());
+            stepBundle.putInt(StepsIngredientsFragment.POSITION_KEY, 0);
+
+            //test for whether the fragment was already created
+            boolean addNewFragment = true;
+            if (savedInstanceState != null) {
+                addNewFragment = false;
+            }
+
+            if (addNewFragment) {
+                StepDetailsFragment stepFragment = new StepDetailsFragment();
+                stepFragment.setArguments(stepBundle);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment).commit();
+
+            } else {
+                Timber.d("Use existing StepDetailsFragment.");
+            }
+            if (addNewStepsFragment) {
+                StepDetailsFragment stepFragment;
+                stepFragment = new StepDetailsFragment();
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment).commit();
+
+            } else {
+                Timber.d("Use existing StepDetailsFragment.");
+            }
+
 
         } else {
-            Timber.d("Use existing StepIngredientsFragment.");
+            isTwoPane = false;
+
+
+           /* Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, ingredients);
+            bundle.putParcelableArrayList(MainActivity.STEPS_LIST, steps);*/
+
+            //test for whether the fragment was already created
+            boolean addNewFragment = true;
+            if (savedInstanceState != null) {
+                addNewFragment = false;
+            }
+
+            if (addNewFragment) {
+                StepsIngredientsFragment fragment = new StepsIngredientsFragment();
+                fragment.setArguments(bundle);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().add(R.id.recipe_detail_container, fragment).commit();
+
+            } else {
+                Timber.d("Use existing StepIngredientsFragment.");
+            }
         }
-
-
 
         //saving Ingredients into SharedPref
         Gson gson = new Gson();
