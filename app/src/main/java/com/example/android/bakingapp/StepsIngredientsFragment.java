@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.IngredientAdapter;
@@ -32,7 +35,8 @@ import timber.log.Timber;
 public class StepsIngredientsFragment extends Fragment implements StepAdapter.StepItemClickListener {
     private List<Step> mSteps;
     private List<Ingredient> mIngredients;
-   @BindView(R.id.ingredients_tv) TextView ingredientsTv;
+    @BindView(R.id.ingredients_tv)
+    TextView ingredientsTv;
 
 
     private RecyclerView mRecyclerView;
@@ -40,7 +44,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
     public final static String STEP_DETAIL_LIST = "STEP_DETAIL_LIST";
     public final static String STEP_CLICKED = "STEP_CLICKED";
     public final static String POSITION_KEY = "POSITION_KEY";
-
 
 
     public StepsIngredientsFragment() {
@@ -82,22 +85,30 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
     // implements itemclick for Steps
     @Override
     public void onItemClick(View view, int stepPosition) {
-        //Toast.makeText(view.getContext(), "Item " + position + " is clicked.", Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
-        intent.putParcelableArrayListExtra(STEP_DETAIL_LIST, (ArrayList) mSteps);
-        intent.putExtra(POSITION_KEY, stepPosition);
-        startActivity(intent);
+        if (!RecipeDetailActivity.isTwoPane) {
+            Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
+            intent.putParcelableArrayListExtra(STEP_DETAIL_LIST, (ArrayList) mSteps);
+            intent.putExtra(POSITION_KEY, stepPosition);
+            startActivity(intent);
+        } else {
+            StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
+            stepDetailsFragment.setSteps((ArrayList<Step>) mSteps);
+            stepDetailsFragment.setStepPosition(stepPosition);
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.step_description_container, stepDetailsFragment)
+                    .commit();
+        }
     }
 
     // helper method for displaying Ingredients
     public static String putIngredientsInString(List<Ingredient> ingredients) {
         String ingredientsFinalString = "Ingredients:" + "\n";
-        if(ingredients ==null || ingredients.size() == 0){
+        if (ingredients == null || ingredients.size() == 0) {
             Timber.v("No recipe selected, no ingredients can be shown");
             return "No recipe selected";
-        }
-        else{
+        } else {
             for (int i = 0; i < ingredients.size(); i++) {
                 double quantity = ingredients.get(i).getQuantity();
                 String measure = ingredients.get(i).getMeasure();
@@ -108,8 +119,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
             return ingredientsFinalString;
         }
     }
-
-
 
 
 }

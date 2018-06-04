@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
@@ -24,7 +25,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
     static ArrayList<Ingredient> ingredients;
     public static String recipeName;
-    private boolean isTwoPane;
+    public static boolean isTwoPane;
+
 
 
     @Override
@@ -90,7 +92,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
             if (addNewStepsFragment) {
                 StepDetailsFragment stepFragment;
                 stepFragment = new StepDetailsFragment();
-
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment).commit();
 
@@ -101,11 +102,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         } else {
             isTwoPane = false;
-
-
-           /* Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, ingredients);
-            bundle.putParcelableArrayList(MainActivity.STEPS_LIST, steps);*/
 
             //test for whether the fragment was already created
             boolean addNewFragment = true;

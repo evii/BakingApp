@@ -31,10 +31,13 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+
+import static android.view.View.GONE;
 
 /**
  * Created by evi on 7. 5. 2018.
@@ -82,17 +85,15 @@ public class StepDetailsFragment extends Fragment {
         if (getArguments() != null) {
             mStepList = getArguments().getParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST);
             mStepPosition = getArguments().getInt(StepsIngredientsFragment.POSITION_KEY);
-            Timber.d("stepDetailTwoPaneGetArg" + mStepPosition);
-            Timber.d("stepDetailTwoPaneGetArg" + mStepList);
+            mStep = mStepList.get(mStepPosition);
+            mDetailedDescription = mStep.getDescription();
+            stepDetailTv.setText(mDetailedDescription);
+            mVideoUri = Uri.parse(mStep.getVideoURL());
+            setUpVideoPlayer(mVideoUri);
+
         }
 
-
         // Populate the View with the detailed step description
-        mStep = mStepList.get(mStepPosition);
-        Timber.d("stepDetailTwoPane" + mStepPosition);
-        Timber.d("stepDetailTwoPane" + mStepList);
-        mDetailedDescription = mStep.getDescription();
-        stepDetailTv.setText(mDetailedDescription);
 
         if (savedInstanceState != null) {
             mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
@@ -120,9 +121,10 @@ public class StepDetailsFragment extends Fragment {
 
             }
         });
-
-        mVideoUri = Uri.parse(mStep.getVideoURL());
-        setUpVideoPlayer(mVideoUri);
+        if (RecipeDetailActivity.isTwoPane) {
+            stepNextButton.setVisibility(GONE);
+            stepPreviousButton.setVisibility(GONE);
+        }
 
         return rootView;
     }
@@ -244,6 +246,16 @@ public class StepDetailsFragment extends Fragment {
         mPlayer.stop();
         mPlayer.release();
         mPlayer = null;
+    }
+
+    // helper method for getting steps
+    public void setSteps(ArrayList<Step> steps) {
+        mStepList = steps;
+    }
+
+    // helper method for getting steps
+    public void setStepPosition(int position) {
+        mStepPosition = position;
     }
 }
 
