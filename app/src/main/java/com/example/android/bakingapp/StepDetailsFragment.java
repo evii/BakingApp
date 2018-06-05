@@ -89,18 +89,16 @@ public class StepDetailsFragment extends Fragment {
             mDetailedDescription = mStep.getDescription();
             stepDetailTv.setText(mDetailedDescription);
             mVideoUri = Uri.parse(mStep.getVideoURL());
-            setUpVideoPlayer(mVideoUri);
+
 
         }
 
         // Populate the View with the detailed step description
 
         if (savedInstanceState != null) {
-            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
-            mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
             mStepPosition = savedInstanceState.getInt(DESCRIPTION_KEY);
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
-            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
+
 
         }
 
@@ -129,6 +127,15 @@ public class StepDetailsFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setUpVideoPlayer(mVideoUri);
+        if (savedInstanceState != null) {
+            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
+            mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);}
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

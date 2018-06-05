@@ -63,9 +63,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
         ButterKnife.bind(this, rootview);
 
         // Displaying Ingredients
-        //Ingredient[] ingredientsArray = mIngredients.toArray(new Ingredient[mIngredients.size()]);
-
-
         String finalIngredients = putIngredientsInString(mIngredients);
         ingredientsTv.setText(finalIngredients);
 
@@ -85,17 +82,28 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
     // implements itemclick for Steps
     @Override
     public void onItemClick(View view, int stepPosition) {
-
+        //Mobile layout
         if (!RecipeDetailActivity.isTwoPane) {
             Intent intent = new Intent(view.getContext(), StepDetailActivity.class);
             intent.putParcelableArrayListExtra(STEP_DETAIL_LIST, (ArrayList) mSteps);
             intent.putExtra(POSITION_KEY, stepPosition);
             startActivity(intent);
-        } else {
-            StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
+        }
+        //Tablet layout
+        else {
+            Bundle stepBundle = new Bundle();
+            stepBundle.putParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST, (ArrayList) mSteps);
+            stepBundle.putInt(StepsIngredientsFragment.POSITION_KEY, stepPosition);
+
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            StepDetailsFragment stepDetailsFragment = (StepDetailsFragment) fragmentManager.findFragmentByTag("StepDetailsFragmentTag");
+            if (stepDetailsFragment == null) {
+                stepDetailsFragment = new StepDetailsFragment();
+            }
+            stepDetailsFragment.setArguments(stepBundle);
             stepDetailsFragment.setSteps((ArrayList<Step>) mSteps);
             stepDetailsFragment.setStepPosition(stepPosition);
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
             fragmentManager.beginTransaction()
                     .replace(R.id.step_description_container, stepDetailsFragment)
                     .commit();
@@ -119,7 +127,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
             return ingredientsFinalString;
         }
     }
-
 
 }
 

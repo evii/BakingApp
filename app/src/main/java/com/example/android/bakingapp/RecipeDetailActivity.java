@@ -43,12 +43,13 @@ public class RecipeDetailActivity extends AppCompatActivity {
         bundle.putParcelableArrayList(MainActivity.STEPS_LIST, steps);
 
 
-        // test if its twopane + inflate twopane mode
+        // Tablet  layout
         if (findViewById(R.id.video_step_ll) != null) {
             isTwoPane = true;
             Timber.d("twopane " + isTwoPane);
 
-           boolean addNewRecipeDetailFragment = true;
+           //left side of two pane - ingredients+steps
+            boolean addNewRecipeDetailFragment = true;
             if (savedInstanceState != null) {
                 addNewRecipeDetailFragment = false;
             }
@@ -63,7 +64,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 Timber.d("Use existing StepIngredientsFragment.");
             }
 
-            //test for whether the fragment was already created
+            //right side - video + step desctiption
             boolean addNewStepsFragment = true;
             if (savedInstanceState != null) {
                 addNewStepsFragment = false;
@@ -74,32 +75,17 @@ public class RecipeDetailActivity extends AppCompatActivity {
             Timber.d("twopane" + steps.size());
             stepBundle.putInt(StepsIngredientsFragment.POSITION_KEY, 0);
 
-            //test for whether the fragment was already created
-            boolean addNewFragment = true;
-            if (savedInstanceState != null) {
-                addNewFragment = false;
-            }
-
-            if (addNewFragment) {
+            if (addNewStepsFragment) {
                 StepDetailsFragment stepFragment = new StepDetailsFragment();
                 stepFragment.setArguments(stepBundle);
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment).commit();
-
-            } else {
-                Timber.d("Use existing StepDetailsFragment.");
-            }
-            if (addNewStepsFragment) {
-                StepDetailsFragment stepFragment;
-                stepFragment = new StepDetailsFragment();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment).commit();
+                fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment,"StepDetailsFragmentTag").commit();
 
             } else {
                 Timber.d("Use existing StepDetailsFragment.");
             }
 
-
+        // Mobile layout
         } else {
             isTwoPane = false;
 
