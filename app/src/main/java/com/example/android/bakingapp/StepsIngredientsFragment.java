@@ -96,10 +96,7 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
             stepBundle.putInt(StepsIngredientsFragment.POSITION_KEY, stepPosition);
 
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            StepDetailsFragment stepDetailsFragment = (StepDetailsFragment) fragmentManager.findFragmentByTag("StepDetailsFragmentTag");
-            if (stepDetailsFragment == null) {
-                stepDetailsFragment = new StepDetailsFragment();
-            }
+            StepDetailsFragment stepDetailsFragment = new StepDetailsFragment();
             stepDetailsFragment.setArguments(stepBundle);
             stepDetailsFragment.setSteps((ArrayList<Step>) mSteps);
             stepDetailsFragment.setStepPosition(stepPosition);
