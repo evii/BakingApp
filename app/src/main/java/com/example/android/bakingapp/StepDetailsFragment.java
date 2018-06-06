@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -37,6 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.view.View.GONE;
 
 /**
@@ -57,6 +60,7 @@ public class StepDetailsFragment extends Fragment {
     private static final String URI_KEY = "URI_KEY";
     private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
     private static final String PLAY_WHE_READY_KEY = "PLAY_WHE_READY_KEY";
+    private int orientation;
 
 
     @BindView(R.id.step_detail_tv)
@@ -80,6 +84,8 @@ public class StepDetailsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
         ButterKnife.bind(this, rootView);
+
+        orientation = getResources().getConfiguration().orientation;
 
         // getting Step details + step position from StepsIngredientsFragment
         if (getArguments() != null) {
@@ -134,7 +140,8 @@ public class StepDetailsFragment extends Fragment {
         if (savedInstanceState != null) {
             mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
             mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
-            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);}
+            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
+        }
     }
 
     @Override
@@ -234,6 +241,14 @@ public class StepDetailsFragment extends Fragment {
             mPlayer.setPlayWhenReady(true);
 
         }
+        if (orientation == ORIENTATION_LANDSCAPE) {
+            Timber.d("Orientationissue-LANDSCAPE");
+
+
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        }
+
+
     }
 
     // helper method to go to next/previous video
@@ -264,5 +279,6 @@ public class StepDetailsFragment extends Fragment {
     public void setStepPosition(int position) {
         mStepPosition = position;
     }
+
 }
 
