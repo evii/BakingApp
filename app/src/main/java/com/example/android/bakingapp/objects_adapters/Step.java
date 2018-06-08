@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by evi on 7. 5. 2018.
  */
 
-public class Step implements Parcelable{
+public class Step implements Parcelable {
 
     @SerializedName("id")
     private int mIdStep;

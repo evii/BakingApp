@@ -12,7 +12,6 @@ import retrofit2.http.GET;
  */
 
 public interface RetrofitInterface {
-
-        @GET("baking.json")
-        Call<List<Recipe>> getAllRecipes();
+    @GET("baking.json")
+    Call<List<Recipe>> getAllRecipes();
 }

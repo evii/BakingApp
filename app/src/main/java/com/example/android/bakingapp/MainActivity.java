@@ -28,21 +28,17 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
 
     private ProgressDialog progressDialog;
-    // @BindView(R.id.resultTV) TextView result;
     private RecipesAdapter adapter;
     private List<Recipe> mRecipeList;
     public static final String INGREDIENTS_LIST = "INGREDIENTS_LIST";
     public static final String STEPS_LIST = "STEPS_LIST";
     public static final String RECIPE_NAME = "RECIPE_NAME";
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //     ButterKnife.bind(this);
         Timber.plant(new Timber.DebugTree());
 
         //progress dialog for loading data
@@ -79,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
             names = names + ", " + name;
         }
 
-
         // measure the screen width to define if tablet or phone:
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -109,10 +104,9 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putParcelableArrayListExtra(INGREDIENTS_LIST, ingredients);
         intent.putParcelableArrayListExtra(STEPS_LIST, steps);
-        intent.putExtra(RECIPE_NAME,recipeName);
+        intent.putExtra(RECIPE_NAME, recipeName);
         startActivity(intent);
     }
-
 }
 
 

@@ -38,7 +38,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Recipe recipe = mRecipeNames.get(position);
-       String recipeName = recipe.getName();
+        String recipeName = recipe.getName();
         holder.recipeNameTV.setText(recipeName);
     }
 
@@ -47,7 +47,6 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     public int getItemCount() {
         return mRecipeNames.size();
     }
-
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -65,9 +64,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
         }
     }
 
-
     // convenience method for getting data at click position
-
     public Recipe getItem(int id) {
 
         return mRecipeNames.get(id);

@@ -11,7 +11,7 @@ import java.util.List;
  * Created by evi on 5. 5. 2018.
  */
 
-public class Recipe implements Parcelable{
+public class Recipe implements Parcelable {
 
     @SerializedName("id")
     private int mId;
@@ -28,8 +28,7 @@ public class Recipe implements Parcelable{
     @SerializedName("steps")
     private List<Step> mSteps = null;
 
-
-    public Recipe (int id, String name, int servings, List<Ingredient> ingredients, List<Step> steps) {
+    public Recipe(int id, String name, int servings, List<Ingredient> ingredients, List<Step> steps) {
         mId = id;
         mName = name;
         mServings = servings;
@@ -41,19 +40,15 @@ public class Recipe implements Parcelable{
         return mId;
     }
 
-    public String getName(){
+    public String getName() {
         return mName;
     }
 
-    public int getServings(){
-        return mServings;
-    }
-
-    public List<Ingredient> getIngredients(){
+    public List<Ingredient> getIngredients() {
         return mIngredients;
     }
 
-    public List<Step> getSteps(){
+    public List<Step> getSteps() {
         return mSteps;
     }
 
@@ -89,5 +84,4 @@ public class Recipe implements Parcelable{
         parcel.writeList(mIngredients);
         parcel.writeList(mSteps);
     }
-
 }

@@ -1,17 +1,18 @@
 package com.example.android.bakingapp;
 
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,14 +34,13 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by evi on 7. 5. 2018.
@@ -54,14 +54,13 @@ public class StepDetailsFragment extends Fragment {
     private String mDetailedDescription;
     private SimpleExoPlayer mPlayer;
     private long mPlaybackPosition;
+    private String mVideoUrl;
     private Uri mVideoUri;
     private boolean mPlayVideoWhenReady;
     private static final String POSITION_KEY = "POSITION_KEY";
     private static final String URI_KEY = "URI_KEY";
     private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
     private static final String PLAY_WHE_READY_KEY = "PLAY_WHE_READY_KEY";
-    private int orientation;
-
 
     @BindView(R.id.step_detail_tv)
     TextView stepDetailTv;
@@ -75,6 +74,9 @@ public class StepDetailsFragment extends Fragment {
     @BindView(R.id.playerView)
     SimpleExoPlayerView playerView;
 
+    @BindView(R.id.no_video_image)
+    ImageView noVideoImageView;
+
 
     public StepDetailsFragment() {
     }
@@ -85,8 +87,6 @@ public class StepDetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
         ButterKnife.bind(this, rootView);
 
-        orientation = getResources().getConfiguration().orientation;
-
         // getting Step details + step position from StepsIngredientsFragment
         if (getArguments() != null) {
             mStepList = getArguments().getParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST);
@@ -94,18 +94,20 @@ public class StepDetailsFragment extends Fragment {
             mStep = mStepList.get(mStepPosition);
             mDetailedDescription = mStep.getDescription();
             stepDetailTv.setText(mDetailedDescription);
-            mVideoUri = Uri.parse(mStep.getVideoURL());
 
-
+            //get video URL + check for validity
+            mVideoUrl = mStep.getVideoURL();
+            if (URLUtil.isValidUrl(mVideoUrl)) {
+                mVideoUri = Uri.parse(mStep.getVideoURL());
+            } else {
+                Timber.v("Video does not have valid URL");
+            }
         }
 
         // Populate the View with the detailed step description
-
         if (savedInstanceState != null) {
             mStepPosition = savedInstanceState.getInt(DESCRIPTION_KEY);
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
-
-
         }
 
         // set functionality for Previous button - to get previous Step
@@ -136,11 +138,55 @@ public class StepDetailsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setUpVideoPlayer(mVideoUri);
+        if (mVideoUri == null) {
+            playerView.setVisibility(View.INVISIBLE);
+            noVideoImageView.setVisibility(View.VISIBLE);
+        } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
+            setUpVideoPlayer(mVideoUri);
+        } else {
+            mPlayer.stop();
+            playerView.setVisibility(View.INVISIBLE);
+            noVideoImageView.setVisibility(View.VISIBLE);
+        }
+
         if (savedInstanceState != null) {
             mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
             mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
             mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checking the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+                && RecipeDetailActivity.isTwoPane == false) {
+            if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+            }
+            stepDetailTv.setVisibility(GONE);
+            stepPreviousButton.setVisibility(GONE);
+            stepNextButton.setVisibility(GONE);
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) playerView.getLayoutParams();
+            params.width = params.MATCH_PARENT;
+            params.height = params.MATCH_PARENT;
+            playerView.setLayoutParams(params);
+
+        } else {
+            if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+                stepDetailTv.setVisibility(VISIBLE);
+                stepPreviousButton.setVisibility(VISIBLE);
+                stepNextButton.setVisibility(VISIBLE);
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) playerView.getLayoutParams();
+                params.width = params.MATCH_PARENT;
+                params.height = 700;
+                playerView.setLayoutParams(params);
+                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);
+            }
         }
     }
 
@@ -155,10 +201,8 @@ public class StepDetailsFragment extends Fragment {
             outState.putLong(POSITION_KEY, mPlaybackPosition);
             outState.putBoolean(PLAY_WHE_READY_KEY, mPlayVideoWhenReady);
             outState.putInt(DESCRIPTION_KEY, mStepPosition);
-
         }
     }
-
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
@@ -167,7 +211,19 @@ public class StepDetailsFragment extends Fragment {
         if (savedInstanceState != null) {
 
             mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
-            goToVideo(mVideoUri);
+            if (mVideoUri == null) {
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+            } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
+                playerView.setVisibility(View.VISIBLE);
+                noVideoImageView.setVisibility(View.INVISIBLE);
+                goToVideo(mVideoUri);
+            } else {
+                mPlayer.stop();
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+            }
+
             mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
             mPlayer.seekTo(mPlaybackPosition);
             mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
@@ -178,7 +234,6 @@ public class StepDetailsFragment extends Fragment {
             stepDetailTv.setText(mStepList.get(mStepPosition).getDescription());
         }
     }
-
 
     @Override
     public void onDestroyView() {
@@ -195,8 +250,20 @@ public class StepDetailsFragment extends Fragment {
         } else {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
             stepDetailTv.setText(mDetailedDescription);
+
             mVideoUri = Uri.parse(mStepList.get(mStepPosition).getVideoURL());
-            goToVideo(mVideoUri);
+            if (mVideoUri == null) {
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+            } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
+                playerView.setVisibility(View.VISIBLE);
+                noVideoImageView.setVisibility(View.INVISIBLE);
+                goToVideo(mVideoUri);
+            } else {
+                mPlayer.stop();
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -210,14 +277,24 @@ public class StepDetailsFragment extends Fragment {
             mDetailedDescription = mStepList.get(mStepPosition).getDescription();
             stepDetailTv.setText(mDetailedDescription);
             mVideoUri = Uri.parse(mStepList.get(mStepPosition).getVideoURL());
-            goToVideo(mVideoUri);
+            if (mVideoUri == null) {
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+            } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
+                playerView.setVisibility(View.VISIBLE);
+                noVideoImageView.setVisibility(View.INVISIBLE);
+                goToVideo(mVideoUri);
+            } else {
+                mPlayer.stop();
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
-    // helper method to initialiaze Exoplayer
+    // helper method to initialize Exoplayer
     private void setUpVideoPlayer(Uri uri) {
         if (mPlayer == null) {
-            Handler mainHandler = new Handler();
             BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
             TrackSelection.Factory videoTrackSelectionFactory =
                     new AdaptiveTrackSelection.Factory(bandwidthMeter);
@@ -229,7 +306,6 @@ public class StepDetailsFragment extends Fragment {
 
             playerView.setPlayer(mPlayer);
 
-
             // Produces DataSource instances through which media data is loaded.
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this.getActivity(),
                     Util.getUserAgent(this.getActivity(), "BakingApp"));
@@ -239,35 +315,39 @@ public class StepDetailsFragment extends Fragment {
             // Prepare the player with the source.
             mPlayer.prepare(videoSource);
             mPlayer.setPlayWhenReady(true);
-
         }
-        if (orientation == ORIENTATION_LANDSCAPE) {
-            Timber.d("Orientationissue-LANDSCAPE");
-
-
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-        }
-
-
     }
 
     // helper method to go to next/previous video
     private void goToVideo(Uri uri) {
         mPlayer.stop();
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this.getActivity(),
-                Util.getUserAgent(this.getActivity(), "BakingApp"));
-        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(uri);
-        mPlayer.prepare(videoSource);
-        mPlayer.setPlayWhenReady(true);
+        if (uri == null) {
+            playerView.setVisibility(View.INVISIBLE);
+            noVideoImageView.setVisibility(View.VISIBLE);
+        } else if (URLUtil.isValidUrl(uri.toString())) {
+            playerView.setVisibility(View.VISIBLE);
+            noVideoImageView.setVisibility(View.INVISIBLE);
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this.getActivity(),
+                    Util.getUserAgent(this.getActivity(), "BakingApp"));
+            MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(uri);
+            mPlayer.prepare(videoSource);
+            mPlayer.setPlayWhenReady(true);
 
+        } else {
+            mPlayer.stop();
+            playerView.setVisibility(View.INVISIBLE);
+            noVideoImageView.setVisibility(VISIBLE);
+        }
     }
 
     // helper method for releasing player
     private void releasePlayer() {
-        mPlayer.stop();
-        mPlayer.release();
-        mPlayer = null;
+        if (mPlayer != null) {
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer = null;
+        }
     }
 
     // helper method for getting steps
@@ -279,6 +359,5 @@ public class StepDetailsFragment extends Fragment {
     public void setStepPosition(int position) {
         mStepPosition = position;
     }
-
 }
 

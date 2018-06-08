@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.Step;
@@ -17,17 +15,13 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
 import timber.log.Timber;
-
 
 public class RecipeDetailActivity extends AppCompatActivity {
 
     static ArrayList<Ingredient> ingredients;
     public static String recipeName;
     public static boolean isTwoPane;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +36,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
         bundle.putParcelableArrayList(MainActivity.INGREDIENTS_LIST, ingredients);
         bundle.putParcelableArrayList(MainActivity.STEPS_LIST, steps);
 
-
         // Tablet  layout
         if (findViewById(R.id.video_step_ll) != null) {
             isTwoPane = true;
-            Timber.d("twopane " + isTwoPane);
 
-           //left side of two pane - ingredients+steps
+            //left side of two pane - ingredients+steps
             boolean addNewRecipeDetailFragment = true;
             if (savedInstanceState != null) {
                 addNewRecipeDetailFragment = false;
@@ -61,7 +53,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 fragmentManager.beginTransaction().add(R.id.recipe_detail_container, fragment).commit();
 
             } else {
-                Timber.d("Use existing StepIngredientsFragment.");
+                Timber.v("Use existing StepIngredientsFragment.");
             }
 
             //right side - video + step desctiption
@@ -72,20 +64,19 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
             Bundle stepBundle = new Bundle();
             stepBundle.putParcelableArrayList(StepsIngredientsFragment.STEP_DETAIL_LIST, steps);
-            Timber.d("twopane" + steps.size());
             stepBundle.putInt(StepsIngredientsFragment.POSITION_KEY, 0);
 
             if (addNewStepsFragment) {
                 StepDetailsFragment stepFragment = new StepDetailsFragment();
                 stepFragment.setArguments(stepBundle);
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment,"StepDetailsFragmentTag").commit();
+                fragmentManager.beginTransaction().add(R.id.step_description_container, stepFragment, "StepDetailsFragmentTag").commit();
 
             } else {
-                Timber.d("Use existing StepDetailsFragment.");
+                Timber.v("Use existing StepDetailsFragment.");
             }
 
-        // Mobile layout
+            // Mobile layout
         } else {
             isTwoPane = false;
 
@@ -102,7 +93,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 fragmentManager.beginTransaction().add(R.id.recipe_detail_container, fragment).commit();
 
             } else {
-                Timber.d("Use existing StepIngredientsFragment.");
+                Timber.v("Use existing StepIngredientsFragment.");
             }
         }
 
@@ -118,14 +109,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
         editor.commit();
 
         startActionUpdateIngredients(this);
-
     }
 
     public static void startActionUpdateIngredients(Context context) {
         Intent intent = new Intent(context, UpdateIngredientsService.class);
         intent.setAction(UpdateIngredientsService.ACTION_UPDATE_INGREDIENTS);
         context.startService(intent);
-
     }
-
 }

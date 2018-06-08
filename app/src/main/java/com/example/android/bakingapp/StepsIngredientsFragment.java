@@ -11,13 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
-import com.example.android.bakingapp.objects_adapters.IngredientAdapter;
 import com.example.android.bakingapp.objects_adapters.Step;
 import com.example.android.bakingapp.objects_adapters.StepAdapter;
 
@@ -38,13 +34,10 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
     @BindView(R.id.ingredients_tv)
     TextView ingredientsTv;
 
-
     private RecyclerView mRecyclerView;
     private StepAdapter mStepAdapter;
     public final static String STEP_DETAIL_LIST = "STEP_DETAIL_LIST";
-    public final static String STEP_CLICKED = "STEP_CLICKED";
     public final static String POSITION_KEY = "POSITION_KEY";
-
 
     public StepsIngredientsFragment() {
     }
@@ -58,7 +51,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
         if (getArguments() != null) {
             mIngredients = getArguments().getParcelableArrayList(MainActivity.INGREDIENTS_LIST);
             mSteps = getArguments().getParcelableArrayList(MainActivity.STEPS_LIST);
-
         }
         ButterKnife.bind(this, rootview);
 
@@ -77,7 +69,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
 
         return rootview;
     }
-
 
     // implements itemclick for Steps
     @Override
@@ -124,7 +115,6 @@ public class StepsIngredientsFragment extends Fragment implements StepAdapter.St
             return ingredientsFinalString;
         }
     }
-
 }
 
 

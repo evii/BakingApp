@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by evi on 14. 5. 2018.
  */
 
-public class Ingredient implements Parcelable{
+public class Ingredient implements Parcelable {
 
     @SerializedName("quantity")
     private double mQuantity;
@@ -68,5 +68,4 @@ public class Ingredient implements Parcelable{
         parcel.writeString(mMeasure);
         parcel.writeString(mIngredient);
     }
-
 }
