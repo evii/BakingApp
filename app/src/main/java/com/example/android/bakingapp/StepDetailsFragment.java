@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +24,6 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -77,7 +75,6 @@ public class StepDetailsFragment extends Fragment {
     @BindView(R.id.no_video_image)
     ImageView noVideoImageView;
 
-
     public StepDetailsFragment() {
     }
 
@@ -86,6 +83,16 @@ public class StepDetailsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
         ButterKnife.bind(this, rootView);
+
+        //hiding app bar in landscape mode
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                !RecipeDetailActivity.isTwoPane) {
+            if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+            }
+        } else {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        }
 
         // getting Step details + step position from StepsIngredientsFragment
         if (getArguments() != null) {
@@ -150,42 +157,10 @@ public class StepDetailsFragment extends Fragment {
         }
 
         if (savedInstanceState != null) {
-            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
-            mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
-            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
-        }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        // Checking the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
-                && RecipeDetailActivity.isTwoPane == false) {
-            if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-            }
-            stepDetailTv.setVisibility(GONE);
-            stepPreviousButton.setVisibility(GONE);
-            stepNextButton.setVisibility(GONE);
-
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) playerView.getLayoutParams();
-            params.width = params.MATCH_PARENT;
-            params.height = params.MATCH_PARENT;
-            playerView.setLayoutParams(params);
-
-        } else {
-            if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-                stepDetailTv.setVisibility(VISIBLE);
-                stepPreviousButton.setVisibility(VISIBLE);
-                stepNextButton.setVisibility(VISIBLE);
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) playerView.getLayoutParams();
-                params.width = params.MATCH_PARENT;
-                params.height = 700;
-                playerView.setLayoutParams(params);
-                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);
+            if (mPlayer != null) {
+                mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
+                mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+                mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
             }
         }
     }
@@ -193,13 +168,16 @@ public class StepDetailsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mPlaybackPosition = mPlayer.getCurrentPosition();
-        mPlayVideoWhenReady = mPlayer.getPlayWhenReady();
-
+        if (mPlayer != null) {
+            mPlaybackPosition = mPlayer.getCurrentPosition();
+            mPlayVideoWhenReady = mPlayer.getPlayWhenReady();
+        }
         if (outState != null) {
-            outState.putString(URI_KEY, mVideoUri.toString());
-            outState.putLong(POSITION_KEY, mPlaybackPosition);
-            outState.putBoolean(PLAY_WHE_READY_KEY, mPlayVideoWhenReady);
+            if (mPlayer != null) {
+                outState.putString(URI_KEY, mVideoUri.toString());
+                outState.putLong(POSITION_KEY, mPlaybackPosition);
+                outState.putBoolean(PLAY_WHE_READY_KEY, mPlayVideoWhenReady);
+            }
             outState.putInt(DESCRIPTION_KEY, mStepPosition);
         }
     }
@@ -209,8 +187,10 @@ public class StepDetailsFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
 
         if (savedInstanceState != null) {
+            if (mPlayer != null) {
+                mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
+            }
 
-            mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
             if (mVideoUri == null) {
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
@@ -223,12 +203,12 @@ public class StepDetailsFragment extends Fragment {
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
             }
-
-            mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
-            mPlayer.seekTo(mPlaybackPosition);
-            mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
-            mPlayer.setPlayWhenReady(mPlayVideoWhenReady);
-
+            if (mPlayer != null) {
+                mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
+                mPlayer.seekTo(mPlaybackPosition);
+                mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
+                mPlayer.setPlayWhenReady(mPlayVideoWhenReady);
+            }
             // save description state
             mStepPosition = savedInstanceState.getInt(DESCRIPTION_KEY);
             stepDetailTv.setText(mStepList.get(mStepPosition).getDescription());

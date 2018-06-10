@@ -7,7 +7,6 @@
 
     <application
         android:allowBackup="true"
-        android:configChanges="orientation|screenSize|keyboardHidden"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -20,11 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RecipeDetailActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:name=".RecipeDetailActivity"/>
         <activity
-            android:name=".StepDetailActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:name=".StepDetailActivity" />
 
         <receiver android:name=".widget_utils.BakingAppWidgetProvider">
             <intent-filter>
