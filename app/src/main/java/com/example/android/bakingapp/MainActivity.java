@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
         intent.putExtra(RECIPE_NAME, recipeName);
         startActivity(intent);
     }
+
 }
 
 
