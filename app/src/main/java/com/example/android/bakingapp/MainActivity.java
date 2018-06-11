@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
     }
 
     private void loadDataFromUrlTask() {
-
         countingIdlingResource.increment();
 
         //progress dialog for loading data
