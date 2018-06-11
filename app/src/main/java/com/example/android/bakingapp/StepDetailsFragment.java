@@ -259,11 +259,9 @@ public class StepDetailsFragment extends Fragment {
             mPlayVideoWhenReady = mPlayer.getPlayWhenReady();
         }
         if (outState != null) {
-            if (mPlayer != null) {
-                outState.putString(URI_KEY, mVideoUri.toString());
-                outState.putLong(POSITION_KEY, mPlaybackPosition);
-                outState.putBoolean(PLAY_WHE_READY_KEY, mPlayVideoWhenReady);
-            }
+            outState.putString(URI_KEY, mVideoUri.toString());
+            outState.putLong(POSITION_KEY, mPlaybackPosition);
+            outState.putBoolean(PLAY_WHE_READY_KEY, mPlayVideoWhenReady);
             outState.putInt(DESCRIPTION_KEY, mStepPosition);
             outState.putString(IMAGE_URL_KEY, mImageUrl);
         }
@@ -481,6 +479,8 @@ public class StepDetailsFragment extends Fragment {
     private void releasePlayer() {
         if (mPlayer != null) {
             mPlayer.stop();
+            mPlaybackPosition = mPlayer.getCurrentPosition();
+            mPlayVideoWhenReady = mPlayer.getPlayWhenReady();
             mPlayer.release();
             mPlayer = null;
         }
