@@ -435,6 +435,8 @@ public class StepDetailsFragment extends Fragment {
             mPlayer.prepare(videoSource);
             mPlayer.setPlayWhenReady(true);
         }
+        mPlayer.setPlayWhenReady(mPlayVideoWhenReady);
+        mPlayer.seekTo(mPlaybackPosition);
     }
 
     // helper method to go to next/previous video
@@ -494,4 +496,3 @@ public class StepDetailsFragment extends Fragment {
         mStepPosition = position;
     }
 }
-
