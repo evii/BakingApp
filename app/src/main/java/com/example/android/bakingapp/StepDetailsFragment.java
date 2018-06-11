@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -53,10 +55,12 @@ public class StepDetailsFragment extends Fragment {
     private SimpleExoPlayer mPlayer;
     private long mPlaybackPosition;
     private String mVideoUrl;
+    private String mImageUrl;
     private Uri mVideoUri;
     private boolean mPlayVideoWhenReady;
     private static final String POSITION_KEY = "POSITION_KEY";
     private static final String URI_KEY = "URI_KEY";
+    private static final String IMAGE_URL_KEY = "IMAGE_URL_KEY";
     private static final String DESCRIPTION_KEY = "DESCRIPTION_KEY";
     private static final String PLAY_WHE_READY_KEY = "PLAY_WHE_READY_KEY";
 
@@ -102,12 +106,20 @@ public class StepDetailsFragment extends Fragment {
             mDetailedDescription = mStep.getDescription();
             stepDetailTv.setText(mDetailedDescription);
 
-            //get video URL + check for validity
+            //get video or image URL + check for validity
             mVideoUrl = mStep.getVideoURL();
             if (URLUtil.isValidUrl(mVideoUrl)) {
                 mVideoUri = Uri.parse(mStep.getVideoURL());
+                Timber.d("Video HAS valid URL");
             } else {
-                Timber.v("Video does not have valid URL");
+                Timber.d("Video DOES NOT HAVE valid URL");
+                mImageUrl = mStep.getThumbnailURL();
+                if (URLUtil.isValidUrl(mImageUrl)) {
+                    Timber.d("Step HAS valid Image URL");
+                } else {
+                    Timber.d("Step DOES NOT HAVE valid URL for image or video");
+                }
+
             }
         }
 
@@ -148,12 +160,23 @@ public class StepDetailsFragment extends Fragment {
         if (mVideoUri == null) {
             playerView.setVisibility(View.INVISIBLE);
             noVideoImageView.setVisibility(View.VISIBLE);
+            if (TextUtils.isEmpty(mImageUrl)) {
+                noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+            } else {
+                Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+            }
         } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
             setUpVideoPlayer(mVideoUri);
         } else {
-            mPlayer.stop();
+            if (mPlayer != null) {
+            mPlayer.stop();}
             playerView.setVisibility(View.INVISIBLE);
             noVideoImageView.setVisibility(View.VISIBLE);
+            if (TextUtils.isEmpty(mImageUrl)) {
+                noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+            } else {
+                Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+            }
         }
 
         if (savedInstanceState != null) {
@@ -162,6 +185,7 @@ public class StepDetailsFragment extends Fragment {
                 mVideoUri = Uri.parse(savedInstanceState.getString(URI_KEY));
                 mPlayVideoWhenReady = savedInstanceState.getBoolean(PLAY_WHE_READY_KEY);
             }
+            mImageUrl = savedInstanceState.getString(IMAGE_URL_KEY);
         }
     }
 
@@ -179,6 +203,7 @@ public class StepDetailsFragment extends Fragment {
                 outState.putBoolean(PLAY_WHE_READY_KEY, mPlayVideoWhenReady);
             }
             outState.putInt(DESCRIPTION_KEY, mStepPosition);
+            outState.putString(IMAGE_URL_KEY, mImageUrl);
         }
     }
 
@@ -194,14 +219,25 @@ public class StepDetailsFragment extends Fragment {
             if (mVideoUri == null) {
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
             } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
                 playerView.setVisibility(View.VISIBLE);
                 noVideoImageView.setVisibility(View.INVISIBLE);
                 goToVideo(mVideoUri);
             } else {
-                mPlayer.stop();
+                if (mPlayer != null) {
+                mPlayer.stop();}
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
             }
             if (mPlayer != null) {
                 mPlaybackPosition = savedInstanceState.getLong(POSITION_KEY);
@@ -235,14 +271,25 @@ public class StepDetailsFragment extends Fragment {
             if (mVideoUri == null) {
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
             } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
                 playerView.setVisibility(View.VISIBLE);
                 noVideoImageView.setVisibility(View.INVISIBLE);
                 goToVideo(mVideoUri);
             } else {
-                mPlayer.stop();
+                if (mPlayer != null) {
+                mPlayer.stop();}
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
             }
         }
     }
@@ -260,14 +307,26 @@ public class StepDetailsFragment extends Fragment {
             if (mVideoUri == null) {
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
             } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
                 playerView.setVisibility(View.VISIBLE);
                 noVideoImageView.setVisibility(View.INVISIBLE);
                 goToVideo(mVideoUri);
             } else {
-                mPlayer.stop();
+                if (mPlayer != null) {
+                    mPlayer.stop();
+                }
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
             }
         }
     }
@@ -300,10 +359,17 @@ public class StepDetailsFragment extends Fragment {
 
     // helper method to go to next/previous video
     private void goToVideo(Uri uri) {
-        mPlayer.stop();
+        if (mPlayer != null) {
+            mPlayer.stop();
+        }
         if (uri == null) {
             playerView.setVisibility(View.INVISIBLE);
             noVideoImageView.setVisibility(View.VISIBLE);
+            if (TextUtils.isEmpty(mImageUrl)) {
+                noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+            } else {
+                Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+            }
         } else if (URLUtil.isValidUrl(uri.toString())) {
             playerView.setVisibility(View.VISIBLE);
             noVideoImageView.setVisibility(View.INVISIBLE);
@@ -311,13 +377,20 @@ public class StepDetailsFragment extends Fragment {
                     Util.getUserAgent(this.getActivity(), "BakingApp"));
             MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(uri);
-            mPlayer.prepare(videoSource);
-            mPlayer.setPlayWhenReady(true);
-
+            if (mPlayer != null) {
+                mPlayer.prepare(videoSource);
+                mPlayer.setPlayWhenReady(true);
+            }
         } else {
-            mPlayer.stop();
+            if (mPlayer != null) {
+            mPlayer.stop();}
             playerView.setVisibility(View.INVISIBLE);
             noVideoImageView.setVisibility(VISIBLE);
+            if (TextUtils.isEmpty(mImageUrl)) {
+                noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+            } else {
+                Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+            }
         }
     }
 
