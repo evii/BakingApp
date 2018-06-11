@@ -57,7 +57,11 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mSteps.size();
+        if (mSteps == null) {
+            return 0;
+        } else {
+            return mSteps.size();
+        }
     }
 
     // allows clicks events to be caught

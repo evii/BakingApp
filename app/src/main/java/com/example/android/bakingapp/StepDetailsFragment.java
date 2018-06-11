@@ -169,7 +169,8 @@ public class StepDetailsFragment extends Fragment {
             setUpVideoPlayer(mVideoUri);
         } else {
             if (mPlayer != null) {
-            mPlayer.stop();}
+                mPlayer.stop();
+            }
             playerView.setVisibility(View.INVISIBLE);
             noVideoImageView.setVisibility(View.VISIBLE);
             if (TextUtils.isEmpty(mImageUrl)) {
@@ -188,6 +189,67 @@ public class StepDetailsFragment extends Fragment {
             mImageUrl = savedInstanceState.getString(IMAGE_URL_KEY);
         }
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            if (mVideoUri == null) {
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
+            } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
+                setUpVideoPlayer(mVideoUri);
+            } else {
+                if (mPlayer != null) {
+                    mPlayer.stop();
+                }
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
+            }
+
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ((Util.SDK_INT <= 23 || mPlayer == null)) {
+            if (mVideoUri == null) {
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
+            } else if (URLUtil.isValidUrl(mVideoUri.toString())) {
+                setUpVideoPlayer(mVideoUri);
+            } else {
+                if (mPlayer != null) {
+                    mPlayer.stop();
+                }
+                playerView.setVisibility(View.INVISIBLE);
+                noVideoImageView.setVisibility(View.VISIBLE);
+                if (TextUtils.isEmpty(mImageUrl)) {
+                    noVideoImageView.setImageResource(R.drawable.ic_videocam_off_black_24dp);
+                } else {
+                    Picasso.with(getActivity()).load(mImageUrl).into(noVideoImageView);
+                }
+            }
+
+        }
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -230,7 +292,8 @@ public class StepDetailsFragment extends Fragment {
                 goToVideo(mVideoUri);
             } else {
                 if (mPlayer != null) {
-                mPlayer.stop();}
+                    mPlayer.stop();
+                }
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
                 if (TextUtils.isEmpty(mImageUrl)) {
@@ -255,6 +318,22 @@ public class StepDetailsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         releasePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
     }
 
     //helper method for Previous button
@@ -282,7 +361,8 @@ public class StepDetailsFragment extends Fragment {
                 goToVideo(mVideoUri);
             } else {
                 if (mPlayer != null) {
-                mPlayer.stop();}
+                    mPlayer.stop();
+                }
                 playerView.setVisibility(View.INVISIBLE);
                 noVideoImageView.setVisibility(View.VISIBLE);
                 if (TextUtils.isEmpty(mImageUrl)) {
@@ -383,7 +463,8 @@ public class StepDetailsFragment extends Fragment {
             }
         } else {
             if (mPlayer != null) {
-            mPlayer.stop();}
+                mPlayer.stop();
+            }
             playerView.setVisibility(View.INVISIBLE);
             noVideoImageView.setVisibility(VISIBLE);
             if (TextUtils.isEmpty(mImageUrl)) {

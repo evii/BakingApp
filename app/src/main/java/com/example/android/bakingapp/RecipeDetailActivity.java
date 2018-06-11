@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.example.android.bakingapp.objects_adapters.Ingredient;
 import com.example.android.bakingapp.objects_adapters.Step;
@@ -27,6 +29,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ingredients = getIntent().getParcelableArrayListExtra(MainActivity.INGREDIENTS_LIST);
         ArrayList<Step> steps = getIntent().getParcelableArrayListExtra(MainActivity.STEPS_LIST);
@@ -115,5 +119,16 @@ public class RecipeDetailActivity extends AppCompatActivity {
         Intent intent = new Intent(context, UpdateIngredientsService.class);
         intent.setAction(UpdateIngredientsService.ACTION_UPDATE_INGREDIENTS);
         context.startService(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
