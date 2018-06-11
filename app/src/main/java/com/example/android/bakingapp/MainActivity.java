@@ -2,6 +2,7 @@ package com.example.android.bakingapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,6 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
+
 public class MainActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
 
     private ProgressDialog progressDialog;
@@ -33,13 +35,24 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
     public static final String INGREDIENTS_LIST = "INGREDIENTS_LIST";
     public static final String STEPS_LIST = "STEPS_LIST";
     public static final String RECIPE_NAME = "RECIPE_NAME";
+    private CountingIdlingResource countingIdlingResource = new CountingIdlingResource("Network_Call");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         Timber.plant(new Timber.DebugTree());
+
+        loadDataFromUrlTask();
+
+    }
+
+    private void loadDataFromUrlTask() {
+
+        countingIdlingResource.increment();
 
         //progress dialog for loading data
         progressDialog = new ProgressDialog(MainActivity.this);
@@ -54,12 +67,14 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 progressDialog.dismiss();
                 generateRecipeGrid(response.body());
+                countingIdlingResource.decrement();
             }
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+                countingIdlingResource.decrement();
             }
         });
     }
@@ -106,6 +121,11 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.It
         intent.putParcelableArrayListExtra(STEPS_LIST, steps);
         intent.putExtra(RECIPE_NAME, recipeName);
         startActivity(intent);
+    }
+
+    //method for returning MainActvity's idling resource for Espresso testing
+    public CountingIdlingResource getEspressoIdlingResourceForMainActivity() {
+        return countingIdlingResource;
     }
 
 }
